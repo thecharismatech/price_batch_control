@@ -12,7 +12,6 @@
                 <sheet>
                     <group>
                         <field name="name"/>
-                        <field name="date"/>
                         <field name="user_id"/>
                         <field name="change_type"/>
                         <field name="change_value"/>

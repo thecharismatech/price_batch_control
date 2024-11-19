@@ -22,6 +22,7 @@ class PriceChangeLog(models.Model):
         ('approved', 'Approved'),
         ('rejected', 'Rejected')
     ], default='draft', tracking=True)
+    date = fields.Datetime(string='Date', readonly=True, default=fields.Datetime.now)
     date_approved = fields.Datetime(readonly=True)
     user_id = fields.Many2one('res.users', default=lambda self: self.env.user)
     company_id = fields.Many2one('res.company', default=lambda self: self.env.company)
