@@ -1,6 +1,6 @@
 {
     'name': 'Price Batch Control',
-    'version': '1.0',
+    'version': '18.0.1.0',
     'category': 'Sales/Sales',
     'summary': 'Batch Price Control and History. Manage product prices in batch operations with full history tracking. - Batch price updates - Price change history - Approval workflow',
     'author': 'Mahmoud Osama',

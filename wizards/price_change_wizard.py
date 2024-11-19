@@ -1,5 +1,5 @@
-from odoo import models, fields, api
-from odoo.exceptions import ValidationError
+from odoo import models, fields, api, _
+from odoo.exceptions import UserError
 
 class PriceChangeWizard(models.TransientModel):
     _name = 'price.change.wizard'
@@ -20,9 +20,19 @@ class PriceChangeWizard(models.TransientModel):
         ('percentage', 'Percentage'),
         ('fixed', 'Fixed Amount')
     ], required=True)
-    change_value = fields.Float(string='Change Value', required=True)
+    change_value = fields.Float(string='Change Value', required=True, aggregator="sum")
     product_ids = fields.Many2many('product.template', string='Products')
     effective_date = fields.Date(string='Effective Date', required=True, default=fields.Date.today)
+    company_id = fields.Many2one('res.company', default=lambda self: self.env.company)
+
+    @api.readonly
+    def action_apply_changes(self):
+        if not self.product_ids:
+            raise UserError(_("Please select at least one product."))
+            
+        valid_products = self.product_ids._filtered_access('write')
+        if not valid_products:
+            raise UserError(_("You don't have access to modify the selected products."))
 
     @api.onchange('source', 'source_document_id')
     def _onchange_source(self):
@@ -34,32 +44,44 @@ class PriceChangeWizard(models.TransientModel):
             elif self.source == 'picking':
                 self.product_ids = self.source_document_id.move_ids.mapped('product_id.product_tmpl_id')
 
+    @api.readonly
     def action_apply_changes(self):
+        if not self.product_ids:
+            raise UserError(self.env._("Please select at least one product."))
+            
         logs = self.env['price.change.log']
         created_logs = []
-        for product in self.product_ids:
+        
+        valid_products = self.product_ids._filtered_access('write')
+        
+        for product in valid_products:
             old_price = product.list_price
             if self.change_type == 'percentage':
                 new_price = old_price * (1 + self.change_value / 100)
             else:
                 new_price = old_price + self.change_value
+            
+            if new_price < 0:
+                raise UserError(self.env._("New price for %s would be negative.", product.name))
                 
-            log = logs.create({
-                'name': f'Price Update: {product.name}',
+            log_vals = {
+                'name': f'Price Change for {product.name}',
                 'product_id': product.id,
                 'old_price': old_price,
                 'new_price': new_price,
                 'change_type': self.change_type,
                 'change_value': self.change_value,
                 'source': self.source,
-                'state': 'pending'
-            })
-            created_logs.append(log.id)
-            
+                'state': 'pending',
+                'company_id': self.company_id.id,
+            }
+            created_logs.append(logs.create(log_vals).id)
+        
         return {
             'type': 'ir.actions.act_window',
             'name': 'Price Change Logs',
             'res_model': 'price.change.log',
-            'view_mode': 'tree,form',
+            'view_mode': 'list,form',
             'domain': [('id', 'in', created_logs)],
+            'target': 'current',
         }
