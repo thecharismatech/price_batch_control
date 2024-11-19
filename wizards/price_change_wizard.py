@@ -1,5 +1,4 @@
-from odoo import models, fields, api, _
-from odoo.exceptions import UserError
+from odoo import models, fields, api
 
 class PriceChangeWizard(models.TransientModel):
     _name = 'price.change.wizard'
@@ -25,15 +24,6 @@ class PriceChangeWizard(models.TransientModel):
     effective_date = fields.Date(string='Effective Date', required=True, default=fields.Date.today)
     company_id = fields.Many2one('res.company', default=lambda self: self.env.company)
 
-    @api.readonly
-    def action_apply_changes(self):
-        if not self.product_ids:
-            raise UserError(_("Please select at least one product."))
-            
-        valid_products = self.product_ids._filtered_access('write')
-        if not valid_products:
-            raise UserError(_("You don't have access to modify the selected products."))
-
     @api.onchange('source', 'source_document_id')
     def _onchange_source(self):
         if self.source != 'manual' and self.source_document_id:
@@ -47,12 +37,14 @@ class PriceChangeWizard(models.TransientModel):
     @api.readonly
     def action_apply_changes(self):
         if not self.product_ids:
-            raise UserError(self.env._("Please select at least one product."))
+            raise self.env._("Please select at least one product.")
+            
+        valid_products = self.product_ids._filtered_access('write')
+        if not valid_products:
+            raise self.env._("You don't have access to modify the selected products.")
             
         logs = self.env['price.change.log']
         created_logs = []
-        
-        valid_products = self.product_ids._filtered_access('write')
         
         for product in valid_products:
             old_price = product.list_price
@@ -62,7 +54,7 @@ class PriceChangeWizard(models.TransientModel):
                 new_price = old_price + self.change_value
             
             if new_price < 0:
-                raise UserError(self.env._("New price for %s would be negative.", product.name))
+                raise self.env._("New price for %s would be negative.", product.name)
                 
             log_vals = {
                 'name': f'Price Change for {product.name}',

@@ -9,6 +9,7 @@
     'data': [
         'security/price_control_security.xml',
         'security/ir.model.access.csv',
+        'views/actions.xml',
         'views/price_change_log_views.xml',
         'views/product_views.xml',
         'views/purchase_order_views.xml',

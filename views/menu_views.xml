@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <menuitem id="menu_price_control_root" name="Price Control" web_icon="price_batch_control,static/description/icon.png">
+    <menuitem id="menu_price_control_root" name="Price Control" web_icon="fa fa-money"/>
     <menuitem id="menu_price_control_main" parent="menu_price_control_root" name="Price Changes" action="action_price_change_log"/>
 </odoo>
