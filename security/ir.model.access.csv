@@ -1,0 +1,2 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_price_change_log_manager,price.change.log.manager,model_price_change_log,price_batch_control.group_price_control_manager,1,1,1,

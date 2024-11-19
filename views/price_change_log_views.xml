@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_price_change_log_form" model="ir.ui.view">
+        <field name="name">price.change.log.form</field>
+        <field name="model">price.change.log</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_approve" string="Approve" type="object" states="pending" groups="price_batch_control.group_price_control_manager"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="date"/>
+                        <field name="user_id"/>
+                        <field name="change_type"/>
+                        <field name="change_value"/>
+                        <field name="source"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+</odoo>
