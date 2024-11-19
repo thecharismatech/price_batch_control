@@ -6,31 +6,42 @@
         <field name="arch" type="xml">
             <form>
                 <header>
-                    <button name="action_to_pending" string="Submit" type="object" class="oe_highlight" states="draft"/>
-                    <button name="action_approve" string="Approve" type="object" class="oe_highlight" states="pending"/>
+                    <button name="action_to_pending" 
+                            string="Submit" 
+                            type="object" 
+                            class="btn-primary"
+                            invisible="state != 'draft'"/>
+                    <button name="action_approve" 
+                            string="Approve" 
+                            type="object" 
+                            class="btn-primary"
+                            invisible="state != 'pending'"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,pending,approved"/>
                 </header>
                 <sheet>
                     <div class="oe_title">
-                        <h1><field name="name"/></h1>
+                        <h1><field name="name" readonly="1"/></h1>
                     </div>
                     <group>
                         <group>
-                            <field name="date"/>
+                            <field name="date" options="{'datepicker': {'week_number': true}}"/>
                             <field name="change_type"/>
                             <field name="change_value"/>
                         </group>
                     </group>
                     <notebook>
-                        <page string="Purchase Orders">
-                            <field name="purchase_order_ids" domain="[('state', 'in', ['purchase', 'done'])]"/>
+                        <page string="Purchase Orders" name="purchase_orders">
+                            <field name="purchase_order_ids"/>
                         </page>
-                        <page string="Products">
+                        <page string="Products" name="products">
                             <field name="product_ids" readonly="1"/>
                         </page>
                     </notebook>
                 </sheet>
-                <chatter/>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" groups="base.group_user"/>
+                    <field name="message_ids"/>
+                </div>
             </form>
         </field>
     </record>
@@ -39,13 +50,13 @@
         <field name="name">price.batch.control.list</field>
         <field name="model">price.batch.control</field>
         <field name="arch" type="xml">
-            <tree>
+            <list>
                 <field name="name"/>
                 <field name="date"/>
                 <field name="change_type"/>
-                <field name="change_value"/>
+                <field name="change_value" sum="Total"/>
                 <field name="state"/>
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -53,6 +64,11 @@
         <field name="name">Price Batch Control</field>
         <field name="res_model">price.batch.control</field>
         <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first price batch control
+            </p>
+        </field>
     </record>
 
     <menuitem id="menu_price_batch" 
@@ -61,4 +77,3 @@
               parent="purchase.menu_purchase_root" 
               sequence="20"/>
 </odoo>
-
