@@ -16,6 +16,12 @@ class PriceChangeLog(models.Model):
         ('fixed', 'Fixed Amount')
     ], required=True, tracking=True)
     change_value = fields.Float(required=True, tracking=True)
+    source = fields.Selection([
+        ('manual', 'Manual Selection'),
+        ('purchase', 'Purchase Order'),
+        ('sale', 'Sales Order'),
+        ('picking', 'Stock Transfer')
+    ], string='Source', default='manual', required=True, tracking=True)
     state = fields.Selection([
         ('draft', 'Draft'),
         ('pending', 'Pending Approval'),
@@ -26,8 +32,25 @@ class PriceChangeLog(models.Model):
     date_approved = fields.Datetime(readonly=True)
     user_id = fields.Many2one('res.users', default=lambda self: self.env.user)
     company_id = fields.Many2one('res.company', default=lambda self: self.env.company)
-
+    
     def action_approve(self):
         for record in self:
             record.product_id.list_price = record.new_price
+            record.write({
+                'state': 'approved',
+                'date_approved': fields.Datetime.now()
+            })
+
+    def action_reject(self):
+        for record in self:
+            record.write({
+                'state': 'rejected'
+            })
+
+    def action_reset_to_draft(self):
+        for record in self:
+            if record.state != 'approved':
+                record.write({
+                    'state': 'draft'
+                })
             record.state = 'approved'
