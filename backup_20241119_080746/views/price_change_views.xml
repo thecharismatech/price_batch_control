@@ -6,8 +6,6 @@
         <field name="arch" type="xml"> 
             <form> 
                 <header> 
-                    <button name="action_to_pending" string="Submit" type="object" class="oe_highlight" states="draft"/>
-                    <button name="action_approve" string="Approve" type="object" class="oe_highlight" states="pending"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,pending,approved"/> 
                 </header> 
                 <sheet> 
@@ -29,30 +27,34 @@
                         </page> 
                     </notebook> 
                 </sheet> 
-                <chatter/>
+                <div class="oe_chatter"> 
+                    <field name="message_follower_ids"/> 
+                    <field name="activity_ids"/> 
+                    <field name="message_ids"/> 
+                </div> 
             </form> 
         </field> 
     </record> 
  
-    <record id="view_price_change_list" model="ir.ui.view"> 
-        <field name="name">price.change.list</field> 
+    <record id="view_price_change_tree" model="ir.ui.view"> 
+        <field name="name">price.change.tree</field> 
         <field name="model">price.change</field> 
         <field name="arch" type="xml"> 
-            <list> 
+            <tree> 
                 <field name="name"/> 
                 <field name="date"/> 
                 <field name="change_type"/> 
                 <field name="change_value"/> 
                 <field name="state"/> 
-            </list> 
+            </tree> 
         </field> 
     </record> 
  
     <record id="action_price_change" model="ir.actions.act_window"> 
         <field name="name">Price Changes</field> 
         <field name="res_model">price.change</field> 
-        <field name="view_mode">list,form</field> 
+        <field name="view_mode">tree,form</field> 
     </record> 
  
     <menuitem id="menu_price_change" name="Price Changes" action="action_price_change" parent="sale.sale_menu_root" sequence="20"/> 
-</odoo>
+</odoo> 
