@@ -1,4 +1,0 @@
-id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink 
-access_price_change_user,price.change,model_price_change,sales_team.group_sale_salesman,1,1,1,0 
-access_price_change_manager,price.change,model_price_change,sales_team.group_sale_manager,1,1,1,1 
-
