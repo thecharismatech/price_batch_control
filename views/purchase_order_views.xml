@@ -9,8 +9,13 @@
                 <button name="action_open_price_wizard" 
                         string="Change Prices" 
                         type="object" 
-                        class="btn-primary"/>
+                        class="btn-primary"
+                        invisible="state not in ('draft', 'sent')"
+                        groups="purchase.group_purchase_user"/>
             </button>
+            <xpath expr="//form" position="inside">
+                <chatter/>
+            </xpath>
         </field>
     </record>
 </odoo>

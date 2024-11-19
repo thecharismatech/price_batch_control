@@ -6,22 +6,10 @@ class ProductTemplate(models.Model):
     
     price_change_count = fields.Integer(compute='_compute_price_change_count', aggregator="count")
     price_change_ids = fields.One2many('price.change.log', 'product_id', string='Price Changes')
-    service_to_purchase = fields.Boolean(string='Service to Purchase', default=False)
 
     def _compute_price_change_count(self):
         for product in self:
             product.price_change_count = len(product.price_change_ids)
-
-    def _search_display_name(self, operator, value):
-        domain = []
-        if operator != 'ilike' or (value or '').strip():
-            criteria_operator = ['|'] if operator not in expression.NEGATIVE_TERM_OPERATORS else ['&', '!']
-            name_domain = criteria_operator + [
-                ('default_code', '=ilike', value + '%'),
-                ('name', operator, value)
-            ]
-            domain = expression.AND([name_domain, domain])
-        return domain
 
     @api.readonly
     def action_view_price_changes(self):
@@ -37,6 +25,14 @@ class ProductTemplate(models.Model):
 class PurchaseOrder(models.Model):
     _inherit = 'purchase.order'
 
+    sale_order_count = fields.Integer(compute='_compute_sale_order_count', aggregator="count")
+
+    def _compute_sale_order_count(self):
+        for order in self:
+            order.sale_order_count = self.env['sale.order'].search_count([
+                ('origin', '=', order.name)
+            ])
+
     def action_open_price_wizard(self):
         return {
             'type': 'ir.actions.act_window',
@@ -50,7 +46,6 @@ class PurchaseOrder(models.Model):
                 'default_product_ids': self.order_line.mapped('product_id.product_tmpl_id').ids
             }
         }
-
 class StockPicking(models.Model):
     _inherit = 'stock.picking'
 
