@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_price_batch_form" model="ir.ui.view">
+        <field name="name">price.batch.control.form</field>
+        <field name="model">price.batch.control</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_to_pending" string="Submit" type="object" class="oe_highlight" states="draft"/>
+                    <button name="action_approve" string="Approve" type="object" class="oe_highlight" states="pending"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,pending,approved"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="date"/>
+                            <field name="change_type"/>
+                            <field name="change_value"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Purchase Orders">
+                            <field name="purchase_order_ids" domain="[('state', 'in', ['purchase', 'done'])]"/>
+                        </page>
+                        <page string="Products">
+                            <field name="product_ids" readonly="1"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_price_batch_list" model="ir.ui.view">
+        <field name="name">price.batch.control.list</field>
+        <field name="model">price.batch.control</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="date"/>
+                <field name="change_type"/>
+                <field name="change_value"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_price_batch" model="ir.actions.act_window">
+        <field name="name">Price Batch Control</field>
+        <field name="res_model">price.batch.control</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <menuitem id="menu_price_batch" 
+              name="Price Batch Control" 
+              action="action_price_batch" 
+              parent="purchase.menu_purchase_root" 
+              sequence="20"/>
+</odoo>
+
